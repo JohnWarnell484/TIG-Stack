@@ -212,7 +212,7 @@
 ###############################################################################
 
 # Read metrics about cpu usage
-[[inputs.cpu]]
+# [[inputs.cpu]]
   ## Whether to report per-cpu stats or not
   percpu = true
   ## Whether to report total system cpu stats or not
@@ -267,7 +267,7 @@
 
 
 # Read metrics about memory usage
-#[[inputs.mem]]
+[[inputs.mem]]
   # no configuration
 
 
@@ -323,69 +323,6 @@
 #   ## Use SSL but skip chain & host verification
 #   # insecure_skip_verify = false
 
-# # Monitor disks' temperatures using hddtemp
-# [[inputs.hddtemp]]
-#   ## By default, telegraf gathers temps data from all disks detected by the
-#   ## hddtemp.
-#   ##
-#   ## Only collect temps from the selected disks.
-#   ##
-#   ## A * as the device name will return the temperature values of all disks.
-#   ##
-#   # address = "127.0.0.1:7634"
-#   # devices = ["sda", "*"]
-
-
-# # Read InfluxDB-formatted JSON metrics from one or more HTTP endpoints
-# [[inputs.influxdb]]
-#   ## Works with InfluxDB debug endpoints out of the box,
-#   ## but other services can use this format too.
-#   ## See the influxdb plugin's README for more details.
-#
-#   ## Multiple URLs from which to read InfluxDB-formatted JSON
-#   ## Default is "http://localhost:8086/debug/vars".
-#   urls = [
-#     "http://localhost:8086/debug/vars"
-#   ]
-#
-#   ## Optional SSL Config
-#   # ssl_ca = "/etc/telegraf/ca.pem"
-#   # ssl_cert = "/etc/telegraf/cert.pem"
-#   # ssl_key = "/etc/telegraf/key.pem"
-#   ## Use SSL but skip chain & host verification
-#   # insecure_skip_verify = false
-#
-#   ## http request & header timeout
-#   timeout = "5s"
-
-
-# # Collect statistics about itself
-# [[inputs.internal]]
-#   ## If true, collect telegraf memory stats.
-#   # collect_memstats = true
-
-
-# # Read metrics from the bare metal servers via IPMI
-#   [[inputs.ipmi_sensor]]
-#   ## optionally specify the path to the ipmitool executable
-#   path = "/usr/bin/ipmitool"
-#   #
-#   ## optionally specify one or more servers via a url matching
-#   ##  [username[:password]@][protocol[(address)]]
-#   ##  e.g.
-#   ##    root:passwd@lan(127.0.0.1)
-#   ##
-#   ## if no servers are specified, local machine sensor stats will be queried
-#   ##
-#   servers = ["ADMIN:ADMIN@lan(192.168.1.1)"]
-#
-#   ## Recomended: use metric 'interval' that is a multiple of 'timeout' to avoid
-#   ## gaps or overlap in pulled data
-#   interval = "30s"
-#
-#   ## Timeout for the ipmitool command to complete
-#   timeout = "20s"
-
 
 # # Read metrics about network interface usage
 # [[inputs.net]]
@@ -394,23 +331,6 @@
 #   ## regardless of status.
 #   ##
 #   # interfaces = ["eth0"]
-
-
-# # Read TCP metrics such as established, time wait and sockets counts.
-# [[inputs.netstat]]
-#   # no configuration
-
-
-# # Collect kernel snmp counters and network interface statistics
-# [[inputs.nstat]]
-#   ## file paths for proc files. If empty default paths will be used:
-#   ##    /proc/net/netstat, /proc/net/snmp, /proc/net/snmp6
-#   ## These can also be overridden with env variables, see README.
-#   proc_net_netstat = "/proc/net/netstat"
-#   proc_net_snmp = "/proc/net/snmp"
-#   proc_net_snmp6 = "/proc/net/snmp6"
-#   ## dump metrics with 0 values too
-#   dump_zeros       = true
 
 
 # # Monitor process cpu and memory usage
@@ -441,20 +361,6 @@
 #   ## Remove numbers from field names.
 #   ## If true, a field name like 'temp1_input' will be changed to 'temp_input'.
 #   # remove_numbers = true
-
-
-# # Read metrics of ZFS from arcstats, zfetchstats, vdev_cache_stats, and pools
-# [[inputs.zfs]]
-#   ## ZFS kstat path. Ignored on FreeBSD
-#   ## If not specified, then default is:
-#   # kstatPath = "/proc/spl/kstat/zfs"
-#
-#   ## By default, telegraf gather all zfs stats
-#   ## If not specified, then default is:
-#   # kstatMetrics = ["arcstats", "zfetchstats", "vdev_cache_stats"]
-#
-#   ## By default, don't gather zpool stats
-#   # poolMetrics = false
 
 
 
@@ -553,44 +459,175 @@
 #   data_format = "influx"
 
 
-# # Generic socket listener capable of handling multiple socket types.
-# [[inputs.socket_listener]]
-#   ## URL to listen on
-#   # service_address = "tcp://:8094"
-#   # service_address = "tcp://127.0.0.1:http"
-#   # service_address = "tcp4://:8094"
-#   # service_address = "tcp6://:8094"
-#   # service_address = "tcp6://[2001:db8::1]:8094"
-#   # service_address = "udp://:8094"
-#   # service_address = "udp4://:8094"
-#   # service_address = "udp6://:8094"
-#   # service_address = "unix:///tmp/telegraf.sock"
-#   # service_address = "unixgram:///tmp/telegraf.sock"
+##
+## SNMP Input Plugin
+##
+## UniFi APs (Gen 2/Gen 3)
+## Last update:  11 April 2017
+##
+ [[inputs.snmp]]
+   # List of agents to poll
+   agents = [ "uap1", "uap2" ]
+   # Polling interval
+   interval = "60s"
+   # Timeout for each SNMP query.
+   timeout = "10s"
+   # Number of retries to attempt within timeout.
+   retries = 3
+   # SNMP version, UAP only supports v1
+   version = 1
+   # SNMP community string.
+   community = "e64P4zwNvj"
+   # The GETBULK max-repetitions parameter
+   max_repetitions = 10
+   # Measurement name
+   name = "snmp.UAP"
+   ##
+   ## System Details
+   ##
+   #  System name (hostname)
+   [[inputs.snmp.field]]
+     is_tag = true
+     name = "sysName"
+     oid = "RFC1213-MIB::sysName.0"
+   #  System vendor OID
+   [[inputs.snmp.field]]
+     name = "sysObjectID"
+     oid = "RFC1213-MIB::sysObjectID.0"
+   #  System description
+   [[inputs.snmp.field]]
+     name = "sysDescr"
+     oid = "RFC1213-MIB::sysDescr.0"
+   #  System contact
+   [[inputs.snmp.field]]
+     name = "sysContact"
+     oid = "RFC1213-MIB::sysContact.0"
+   #  System location
+   [[inputs.snmp.field]]
+     name = "sysLocation"
+     oid = "RFC1213-MIB::sysLocation.0"
+   #  System uptime
+   [[inputs.snmp.field]]
+     name = "sysUpTime"
+     oid = "RFC1213-MIB::sysUpTime.0"
+   #  UAP model
+   [[inputs.snmp.field]]
+     name = "unifiApSystemModel"
+     oid = "UBNT-UniFi-MIB::unifiApSystemModel"
+   #  UAP firmware version
+   [[inputs.snmp.field]]
+     name = "unifiApSystemVersion"
+     oid = "UBNT-UniFi-MIB::unifiApSystemVersion"
+   ##
+   ## Host Resources
+   ##
+   #  Total memory
+   [[inputs.snmp.field]]
+     name = "memTotal"
+     oid = "FROGFOOT-RESOURCES-MIB::memTotal.0"
+   #  Free memory
+   [[inputs.snmp.field]]
+     name = "memFree"
+     oid = "FROGFOOT-RESOURCES-MIB::memFree.0"
+   #  Buffer memory
+   [[inputs.snmp.field]]
+     name = "memBuffer"
+     oid = "FROGFOOT-RESOURCES-MIB::memBuffer.0"
+   #  Cache memory
+   [[inputs.snmp.field]]
+     name = "memCache"
+     oid = "FROGFOOT-RESOURCES-MIB::memCache.0"
+   #  Per-interface traffic, errors, drops
+   [[inputs.snmp.table]]
+     oid = "IF-MIB::ifTable"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "IF-MIB::ifDescr"
+   ##
+   ## Interface Details & Metrics
+   ##
+   #  Wireless interfaces
+   [[inputs.snmp.table]]
+     oid = "UBNT-UniFi-MIB::unifiRadioTable"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "UBNT-UniFi-MIB::unifiRadioName"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "UBNT-UniFi-MIB::unifiRadioRadio"
+   #  BSS instances
+   [[inputs.snmp.table]]
+     oid = "UBNT-UniFi-MIB::unifiVapTable"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "UBNT-UniFi-MIB::unifiVapName"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "UBNT-UniFi-MIB::unifiVapRadio"
+   #  Ethernet interfaces
+   [[inputs.snmp.table]]
+     oid = "UBNT-UniFi-MIB::unifiIfTable"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "UBNT-UniFi-MIB::unifiIfName"
+   ##
+   ## System Performance
+   ##
+   #  System load averages
+   [[inputs.snmp.table]]
+     oid = "FROGFOOT-RESOURCES-MIB::loadTable"
+     [[inputs.snmp.table.field]]
+       is_tag = true
+       oid = "FROGFOOT-RESOURCES-MIB::loadDescr"
+   ##
+   ## SNMP metrics
+   ##
+   #  Number of SNMP messages received
+   [[inputs.snmp.field]]
+     name = "snmpInPkts"
+     oid = "SNMPv2-MIB::snmpInPkts.0"
+   #  Number of SNMP Get-Request received
+   [[inputs.snmp.field]]
+     name = "snmpInGetRequests"
+     oid = "SNMPv2-MIB::snmpInGetRequests.0"
+   #  Number of SNMP Get-Next received
+   [[inputs.snmp.field]]
+     name = "snmpInGetNexts"
+     oid = "SNMPv2-MIB::snmpInGetNexts.0"
+   #  Number of SNMP objects requested
+   [[inputs.snmp.field]]
+     name = "snmpInTotalReqVars"
+     oid = "SNMPv2-MIB::snmpInTotalReqVars.0"
+   #  Number of SNMP Get-Response received
+   [[inputs.snmp.field]]
+     name = "snmpInGetResponses"
+     oid = "SNMPv2-MIB::snmpInGetResponses.0"
+   #  Number of SNMP messages sent
+   [[inputs.snmp.field]]
+     name = "snmpOutPkts"
+     oid = "SNMPv2-MIB::snmpOutPkts.0"
+   #  Number of SNMP Get-Request sent
+   [[inputs.snmp.field]]
+     name = "snmpOutGetRequests"
+     oid = "SNMPv2-MIB::snmpOutGetRequests.0"
+   #  Number of SNMP Get-Next sent
+   [[inputs.snmp.field]]
+     name = "snmpOutGetNexts"
+     oid = "SNMPv2-MIB::snmpOutGetNexts.0"
+   #  Number of SNMP Get-Response sent
+   [[inputs.snmp.field]]
+     name = "snmpOutGetResponses"
+     oid = "SNMPv2-MIB::snmpOutGetResponses.0"
+##
+## InfluxDB Output Plugin
+##
+#[[outputs.influxdb]]
+#  urls = ["http://localhost:8086"] # required
+#  database = "telegraf" # required
+#  retention_policy = ""
+#  write_consistency = "any"
+#  timeout = "5s"
+#  username = "username"
+#  password = "password"
+#  user_agent = "telegraf"
 #
-#   ## Maximum number of concurrent connections.
-#   ## Only applies to stream sockets (e.g. TCP).
-#   ## 0 (default) is unlimited.
-#   # max_connections = 1024
-#
-#   ## Read timeout.
-#   ## Only applies to stream sockets (e.g. TCP).
-#   ## 0 (default) is unlimited.
-#   # read_timeout = "30s"
-#
-#   ## Maximum socket buffer size in bytes.
-#   ## For stream sockets, once the buffer fills up, the sender will start backing up.
-#   ## For datagram sockets, once the buffer fills up, metrics will start dropping.
-#   ## Defaults to the OS default.
-#   # read_buffer_size = 65535
-#
-#   ## Period between keep alive probes.
-#   ## Only applies to TCP sockets.
-#   ## 0 disables keep alive probes.
-#   ## Defaults to the OS configuration.
-#   # keep_alive_period = "5m"
-#
-#   ## Data format to consume.
-#   ## Each data format has its own unique set of configuration options, read
-#   ## more about them here:
-#   ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
-#   # data_format = "influx"

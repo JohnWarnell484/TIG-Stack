@@ -212,19 +212,19 @@
 ###############################################################################
 
 # Read metrics about cpu usage
-# [[inputs.cpu]]
+[[inputs.cpu]]
 #  ## Whether to report per-cpu stats or not
-#  percpu = true
+  percpu = true
 #  ## Whether to report total system cpu stats or not
-#  totalcpu = true
+  totalcpu = true
 #  ## If true, collect raw CPU time metrics.
-#  collect_cpu_time = false
+  collect_cpu_time = false
 #  ## If true, compute and report the sum of all non-idle CPU states.
-#  report_active = false
+  report_active = false
 
 
 # Read metrics about disk usage by mount point
-# [[inputs.disk]]
+[[inputs.disk]]
 #  ## By default, telegraf gather stats for all mountpoints.
 #  ## Setting mountpoints will restrict the stats to the specified mountpoints.
 #  # mount_points = ["/"]
@@ -281,7 +281,7 @@
 
 
 # Read metrics about system load & uptime
-#[[inputs.system]]
+[[inputs.system]]
   # no configuration
 
 # # Read metrics about docker containers
